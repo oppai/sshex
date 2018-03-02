@@ -163,6 +163,24 @@ defmodule SSHEx do
     Stream.resource start_fun, next_fun, after_fun
   end
 
+  @doc """
+    Close an open ssh connection reference.
+    
+    Ex:
+    ```
+      {:ok, conn} = SSHEx.connect ip: '123.123.123.123', user: 'user'
+      SSHEx.cmd! conn, "sleep 10"
+      SSHEx.close conn
+    ```
+  """
+  def close(conn, opts \\ []) do
+    opts =
+      opts
+      |> H.convert_values
+      |> H.defaults(ssh_module: :ssh)
+    opts[:ssh_module].close(conn)
+  end
+
   # Actual mapping of `:ssh` responses into streamable chunks
   #
   defp do_stream_next(conn, channel, opts) do
